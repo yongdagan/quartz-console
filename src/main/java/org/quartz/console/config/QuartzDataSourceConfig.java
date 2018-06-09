@@ -1,7 +1,5 @@
 package org.quartz.console.config;
 
-import java.io.IOException;
-
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -9,7 +7,6 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -56,8 +53,8 @@ public class QuartzDataSourceConfig {
 			@Qualifier("quartzDataSource") DataSource quartzDataSource) throws Exception {
 		SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
 		sqlSessionFactoryBean.setDataSource(quartzDataSource);
-//		sqlSessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver()
-//				.getResources("classpath:mapper/*.xml")); TODO
+		sqlSessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver()
+				.getResources("classpath:mapper/*.xml"));
 		return sqlSessionFactoryBean.getObject();
 	}
 	

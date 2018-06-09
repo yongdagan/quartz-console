@@ -6,14 +6,16 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.quartz.Scheduler;
-import org.quartz.Trigger;
+import org.quartz.console.job.TaskScannerJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 @Configuration
 public class QuartzConfig {
@@ -24,7 +26,7 @@ public class QuartzConfig {
 	
 	@Autowired
 	private AutowiringBeanJobFactory jobFactory;
-
+	
 	@Bean("quartzSchedulerFactory")
 	public SchedulerFactoryBean quartzSchedulerFactory() throws IOException {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
@@ -33,7 +35,7 @@ public class QuartzConfig {
 		schedulerFactoryBean.setOverwriteExistingJobs(true);
 		schedulerFactoryBean.setStartupDelay(15);
 		
-//		schedulerFactoryBean.setTriggers(triggers);
+		schedulerFactoryBean.setTriggers(taskScannerJobTrigger().getObject());
 		schedulerFactoryBean.setDataSource(quartzDataSource);
 		schedulerFactoryBean.setJobFactory(jobFactory);
 		return schedulerFactoryBean;
@@ -48,8 +50,28 @@ public class QuartzConfig {
 	}
 
 	@Bean("quartzScheduler")
-	public Scheduler quartzScheduler(@Qualifier("quartzSchedulerFactory") SchedulerFactoryBean quartzSchedulerFactory) {
-		return quartzSchedulerFactory.getScheduler();
+	public Scheduler quartzScheduler() throws IOException {
+		return quartzSchedulerFactory().getScheduler();
 	}
-
+	
+	@Bean("taskScannerJob")
+	public JobDetailFactoryBean taskScannerJob() {
+		JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
+		factoryBean.setJobClass(TaskScannerJob.class);
+		factoryBean.setName("task-scanner");
+		factoryBean.setGroup("quartz-console");
+		factoryBean.setDurability(true);
+		return factoryBean;
+	}
+	
+	@Bean("taskScannerJobTrigger")
+	public SimpleTriggerFactoryBean taskScannerJobTrigger() {
+		SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
+		factoryBean.setJobDetail(taskScannerJob().getObject());
+		factoryBean.setGroup("quartz-console");
+		factoryBean.setName("task-scanner-trigger");
+		factoryBean.setRepeatInterval(10000);
+		return factoryBean;
+	}
+	
 }
