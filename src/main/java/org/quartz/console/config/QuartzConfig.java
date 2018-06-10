@@ -9,6 +9,7 @@ import org.quartz.Scheduler;
 import org.quartz.console.job.TaskScannerJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,11 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 @Configuration
 public class QuartzConfig {
+	
+	@Value("${quartz.config.start-delay:15}")
+	private Integer startDelay;
+	@Value("${quartz.trigger.scanner.interval:10000}")
+	private Long scannerInterval;
 
 	@Autowired
 	@Qualifier("quartzDataSource")
@@ -33,7 +39,7 @@ public class QuartzConfig {
 		schedulerFactoryBean.setQuartzProperties(quartzProperties());
 		schedulerFactoryBean.setAutoStartup(true);
 		schedulerFactoryBean.setOverwriteExistingJobs(true);
-		schedulerFactoryBean.setStartupDelay(15);
+		schedulerFactoryBean.setStartupDelay(startDelay);
 		
 		schedulerFactoryBean.setTriggers(taskScannerJobTrigger().getObject());
 		schedulerFactoryBean.setDataSource(quartzDataSource);
@@ -70,7 +76,7 @@ public class QuartzConfig {
 		factoryBean.setJobDetail(taskScannerJob().getObject());
 		factoryBean.setGroup("quartz-console");
 		factoryBean.setName("task-scanner-trigger");
-		factoryBean.setRepeatInterval(10000);
+		factoryBean.setRepeatInterval(scannerInterval);
 		return factoryBean;
 	}
 	

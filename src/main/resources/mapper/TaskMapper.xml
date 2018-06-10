@@ -1,5 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
-<mapper namespace="org.quartz.console.mapper.TaskMapper">  
-    
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.quartz.console.mapper.TaskMapper">
+
+	<resultMap id="taskResultMap" type="org.quartz.console.bean.Task">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="owner" column="owner" />
+		<result property="triggerType" column="trigger_type" />
+		<result property="cornExpression" column="corn_expression" />
+		<result property="repeatInterval" column="repeat_interval" />
+		<result property="status" column="status" />
+		<result property="refresh" column="refresh" />
+		<result property="data" column="data" />
+	</resultMap>
+
+	<sql id="taskField">
+		id, name, owner, trigger_type, corn_expression,
+		repeat_interval, status, refresh, data
+	</sql>
+
+	<select id="selectList" parameterType="java.util.Map" resultMap="taskResultMap">
+		select
+		<include refid="taskField" />
+		from task
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="owner != null">
+				AND owner = #{owner}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="refresh != null">
+				AND refresh = #{refresh}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+		</trim>
+	</select>
+	
+	<insert id="insert" parameterType="org.quartz.console.bean.Task">
+		insert into task (
+		<include refid="taskField" />
+		)
+		values (#{id}, #{name}, #{owner}, #{triggerType}, #{cornExpression},
+		#{repeatInterval}, 1, 1, #{data})
+	</insert>
+
+	<update id="updateSelective" parameterType="org.quartz.console.bean.Task">
+		update task
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="name != null">name=#{name},</if>
+			<if test="owner != null">owner=#{owner},</if>
+			<if test="triggerType != null">trigger_type=#{triggerType},</if>
+			<if test="cornExpression != null">corn_expression=#{cornExpression},</if>
+			<if test="repeatInterval != null">repeat_interval=#{repeatInterval},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="data != null">data=#{data},</if>
+			refresh=1
+		</trim>
+		where id=#{id}
+	</update>
+
+	<update id="delete" parameterType="org.quartz.console.bean.Task">
+		update task
+		set status = 0, refresh = 1
+		where owner=#{owner} and name=#{name}
+	</update>
+
+	<update id="refresh" parameterType="org.quartz.console.bean.Task">
+		update task
+		set refresh = 0
+		where owner=#{owner} and name=#{name}
+	</update>
+
 </mapper>
