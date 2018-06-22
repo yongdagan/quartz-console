@@ -1,4 +1,4 @@
-package org.quartz.console.config;
+package org.quartz.console.common;
 
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Autowired;

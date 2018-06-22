@@ -6,6 +6,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.quartz.Scheduler;
+import org.quartz.console.common.AutowiringBeanJobFactory;
 import org.quartz.console.job.TaskScannerJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -35,8 +35,9 @@ public class TaskMapperTest {
 		task = new Task();
 		task.setName(NAME);
 		task.setOwner(OWNER);
+		task.setTargetJob("job");
 		task.setTriggerType(Constant.TRIGGER_TYPE_INTERVAL);
-		task.setRepeatInterval(10000l);
+		task.setRepeatSeconds(10);
 		taskMapper.insert(task);
 	}
 	
