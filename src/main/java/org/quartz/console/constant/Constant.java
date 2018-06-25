@@ -10,5 +10,7 @@ public interface Constant {
 	
 	Integer REFRESH_Y = 1;
 	Integer REFRESH_N = 0;
+	
+	String TASK_DATA_KEY = "taskData";
 
 }

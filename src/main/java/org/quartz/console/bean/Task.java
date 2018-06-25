@@ -15,11 +15,13 @@ public class Task implements Serializable {
 	
 	private String owner;
 	
+	private String targetJob;
+	
 	private Integer triggerType;
 	
 	private String cornExpression;
 	
-	private Long repeatInterval;
+	private Integer repeatSeconds;
 	
 	private String data;
 	
@@ -59,14 +61,6 @@ public class Task implements Serializable {
 		this.cornExpression = cornExpression;
 	}
 
-	public Long getRepeatInterval() {
-		return repeatInterval;
-	}
-
-	public void setRepeatInterval(Long repeatInterval) {
-		this.repeatInterval = repeatInterval;
-	}
-
 	public String getData() {
 		return data;
 	}
@@ -97,6 +91,22 @@ public class Task implements Serializable {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public String getTargetJob() {
+		return targetJob;
+	}
+
+	public void setTargetJob(String targetJob) {
+		this.targetJob = targetJob;
+	}
+
+	public Integer getRepeatSeconds() {
+		return repeatSeconds;
+	}
+
+	public void setRepeatSeconds(Integer repeatSeconds) {
+		this.repeatSeconds = repeatSeconds;
 	}
 
 }

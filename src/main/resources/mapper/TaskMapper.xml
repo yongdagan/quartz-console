@@ -6,17 +6,18 @@
 		<id property="id" column="id" />
 		<result property="name" column="name" />
 		<result property="owner" column="owner" />
+        <result property="targetJob" column="target_job" />
 		<result property="triggerType" column="trigger_type" />
 		<result property="cornExpression" column="corn_expression" />
-		<result property="repeatInterval" column="repeat_interval" />
+		<result property="repeatSeconds" column="repeat_seconds" />
 		<result property="status" column="status" />
 		<result property="refresh" column="refresh" />
 		<result property="data" column="data" />
 	</resultMap>
 
 	<sql id="taskField">
-		id, name, owner, trigger_type, corn_expression,
-		repeat_interval, status, refresh, data
+		id, name, owner, target_job, trigger_type, corn_expression,
+		repeat_seconds, status, refresh, data
 	</sql>
 
 	<select id="selectList" parameterType="java.util.Map" resultMap="taskResultMap">
@@ -39,12 +40,12 @@
 		</trim>
 	</select>
 	
-	<insert id="insert" parameterType="org.quartz.console.bean.Task">
+	<insert id="insert" parameterType="org.quartz.console.bean.Task" useGeneratedKeys="true" keyProperty="id">
 		insert into task (
 		<include refid="taskField" />
 		)
-		values (#{id}, #{name}, #{owner}, #{triggerType}, #{cornExpression},
-		#{repeatInterval}, 1, 1, #{data})
+		values (#{id}, #{name}, #{owner}, #{targetJob}, #{triggerType}, #{cornExpression},
+		#{repeatSeconds}, 1, 1, #{data})
 	</insert>
 
 	<update id="updateSelective" parameterType="org.quartz.console.bean.Task">
@@ -52,9 +53,10 @@
 		<trim prefix="SET" suffixOverrides=",">
 			<if test="name != null">name=#{name},</if>
 			<if test="owner != null">owner=#{owner},</if>
+			<if test="targetJob != null">target_job=#{targetJob},</if>
 			<if test="triggerType != null">trigger_type=#{triggerType},</if>
 			<if test="cornExpression != null">corn_expression=#{cornExpression},</if>
-			<if test="repeatInterval != null">repeat_interval=#{repeatInterval},</if>
+			<if test="repeatSeconds != null">repeat_seconds=#{repeatSeconds},</if>
 			<if test="status != null">status=#{status},</if>
 			<if test="data != null">data=#{data},</if>
 			refresh=1
