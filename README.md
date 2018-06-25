@@ -1,1 +1,7 @@
 # quartz-console
+
+quartz-console是一个基于quartz集群模式下的quartz任务管理DEMO。
+
+quartz集群模式将quartz任务持久化到DB，使得多个应用实例可以共同承担JOB的执行（每次执行前请求trigger的锁）。直接查询或修改quartz的数据表可能会影响quartz原有的调度模式。这个DEMO使用一个间接的task数据表，所有任务的修改都在这个数据表进行，而TaskScannerJob这个任务会定时扫描task表，将更新的任务实例化成具体的JOB。
+
+TaskController提供了简单的接口供DEMO测试。
