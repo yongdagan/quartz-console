@@ -40,7 +40,7 @@
 		</trim>
 	</select>
 	
-	<insert id="insert" parameterType="org.quartz.console.bean.Task">
+	<insert id="insert" parameterType="org.quartz.console.bean.Task" useGeneratedKeys="true" keyProperty="id">
 		insert into task (
 		<include refid="taskField" />
 		)
