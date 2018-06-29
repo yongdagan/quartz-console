@@ -65,8 +65,7 @@ public class TaskScannerJob implements Job {
 					this.addJob(jobKey, triggerKey, task, job);
 				} else if (currentJob != null && Constant.STATUS_VALID.equals(task.getStatus())) {
 					// 更新调度
-					this.deleteJob(jobKey, triggerKey, task);
-					this.addJob(jobKey, triggerKey, task, job);
+					this.updateJob(jobKey, triggerKey, task, job);
 				} else if (currentJob != null && Constant.STATUS_INVALID.equals(task.getStatus())) {
 					// 删除调度
 					this.deleteJob(jobKey, triggerKey, task);
@@ -100,6 +99,31 @@ public class TaskScannerJob implements Job {
 					.withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(task.getRepeatSeconds())).build();
 		}
 		quartzScheduler.scheduleJob(jobDetail, trigger);
+	}
+	
+	/**
+	 * 更新任务调度
+	 * @param jobKey
+	 * @param triggerKey
+	 * @param task
+	 * @param job
+	 * @throws SchedulerException
+	 */
+	private void updateJob(JobKey jobKey, TriggerKey triggerKey, Task task, Job job) throws SchedulerException {
+		// 更新已有JOB
+		JobDetail jobDetail = JobBuilder.newJob(job.getClass()).withIdentity(jobKey)
+				.usingJobData(Constant.TASK_DATA_KEY, task.getData()).storeDurably().build();
+		quartzScheduler.addJob(jobDetail, true);
+		Trigger trigger;
+		if (Constant.TRIGGER_TYPE_CRON.equals(task.getTriggerType())) {
+			trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
+					.withSchedule(CronScheduleBuilder.cronSchedule(task.getCornExpression())).build();
+		} else {
+			trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
+					.withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(task.getRepeatSeconds())).build();
+		}
+		// 替换trigger重新调度job
+		quartzScheduler.rescheduleJob(triggerKey, trigger);
 	}
 
 	/**
